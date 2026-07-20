@@ -248,13 +248,6 @@ $("#zoom a").on("click", function(){
 	
   });
 	
-	
-	
-	
-	
-	
-	
-  
 //-----------------------------------------------------------------------------------------------------
 
   /*
@@ -264,11 +257,60 @@ $("#zoom a").on("click", function(){
    포커스가 다른 요소로 이동되었을때 검색 입력 요소에 아무 내용이 없으면
    다시 안내가이드 배경 이미지가 다시 나타나게 하기 
    */
+   //<input type="text" name="keyword" id="keyword" title="검색어입력" /> 
+   // 요소를 선택해서 가져와  "focus" 이벤트와 "blur" 이벤트 다중 등록
+   $("#keyword").on("focus",function(){
+		/*
+			focus 이벤트가 발생한 <input>요소를 선택해서 가져와 검색창의 배경 힌트 이미지 위치를 변경시키는데...
+			"background-position" 속성의 값은 "0  -500px"로 설정 되어 있으므로
+			배경 힌트 이미지가  <input>요소 밖으로 이동되게 하여 배경 인트 이미지를 숨기게 합니다.
+			이때 "0  -500px"은 이미지의 x축위치값으로 왼쪽 끝을 의미 하며,  -500px은  y축의 위치값으로 위쪽 끝을 의미 합니다.
+			따라서 아래 코드는 검색창의 배경 힌트 이미지를 왼쪽 끝(0)에서 
+			상단에서 500px(배경이미지의 높이)위쪽으로 이동 시키는 것입니다. 
+		*/
+		$(this).css("background-position", "0 -500px");
+		
+		
+   }).on("blur",function(){
+		/*
+		  "focus"이벤트가 <input>에 존재하다가 focus를 잃은 동작(blur이벤트)가 발생했을대
+		  "blur"이벤트가 발생한 <input>을 선택해서 가져와 
+		  <input>에 데이터를 입력하지 않았을때  <input>에 설정된 배경 힌트 이미지가 다시 보이게  x축 0  y축 0으로 설정해서 보여줍니다.
+		*/
+		if( $(this).val() === ""){
+			
+			$(this).css("background-position","0 0");
+		}
+   });
+   /*
+     검색창 안내 배경 이미지 보이기/숨기기 기능
+     -------------------------------------------------------------
 
-   
-   
- 
- 
+     동작
+     - focus : 검색창에 포커스가 들어오면 → 배경 이미지 숨김
+     - blur  : 검색창에서 포커스가 나가고 내용이 비어 있으면 → 배경 이미지 다시 표시
+
+     배경 이미지 위치
+     - "0 -500px" : 가이드 이미지 숨김 (위로 이동)
+     - "0 0"      : 가이드 이미지 표시 (원래 위치)
+     //====================================================================
+	 
+	 $("#keyword").on("focus blur", function (event) {
+
+	   // 포커스가 들어온 경우 (focus)
+	   if (event.type === "focus") {
+	     $(this).css("background-position", "0 -500px");
+	     return;
+	   }
+
+	   // 포커스를 잃은 경우 (blur)
+	   if (event.type === "blur" && $(this).val() === "") {
+	     $(this).css("background-position", "0 0");
+	   }
+
+	 });
+
+	 */
    
    
    
@@ -290,60 +332,168 @@ $("#zoom a").on("click", function(){
   현재 마우스가 올라간 상위 메뉴의 이미지는 활성화된 이미지로 바뀌도록 만들자 
   */ 
   /*GNB 메뉴*/
+ 
+  //나중에 우리가 마우스 포인터가 올라가 있던~ 상위 메뉴 <a>에서 마우스포인터가 벗어나게 하기 위해 
+  //마우스 포인터가 올라가있는 상위 <a>를 저장시킬 변수 선언
+  //요약 : mouseover 이벤트가 발생한 상위 <a>요소 저장 
+  let beforeEl;
 
-
-  
+  //id="gnb"인 <ul></ul>요소 내부에 만들어져 있는 
+  //           모든<li></li>요소들 내부에 만들어져 있는
+  //           모든 하위 <a></a>요소들 4쌍을 배열에 담아 최종선택해서 가져와
+  //           "mouseover" 이벤트와 "focus"이벤트를 다중 등록
+  $("#gnb>li>a").on("mouseover focus", function(){
+	
+		//만일 펼쳐져 있는(활성화 되어 있는) 서브 메뉴 영역이 있으면 선택해서 가져와
+		//위로 접으면서 숨기는 효과를 주기 위해 slideUp() 메소드 사용 하자
+		$("#gnb ul:visible").slideUp("fast");
+		
+		//상위 메뉴 영역 <a>들 중에서 
+		//하나의 <a>메뉴 영역에 마우스포인터를 올리거나 포커스가 생성되면
+		//1. 상위 메뉴 <a>영역 내부에 작성된 자식<img>태그를 선택해서  src속성에 설정된 이미지 경로주소를 노란색이미지로 변경 
+		let imgSrc = $("img",this).attr("src");
+	    //만약 [홈] <a>태그위에 마우스포인터를 올리면 
+		//마우스포인터가 올라간 <a>내부에 만들어진 <img src="images/gnb_1_out.gif">태그의
+		//src속성의 주소(images/gnb_1_out.gif)를 얻어 낸다.
+		console.log(imgSrc);
+		
+		//"images/gnb_1_out.gif" 변경-> "images/gnb_1_over.gif" 가 되게 변경 하기 위해 
+		//설명 : out.gif 특정 부분만  over.gif로 변경시킨 
+	    //      전체 경로 "images/gnb_1_over.gif" 반환해줌   				
+		let newSrc = imgSrc.replace("out.gif",  "over.gif");
+		console.log(newSrc);
+		
+		//"images/gnb_1_out.gif" 를  "images/gnb_1_over.gif" 로 변경 시켰으니 <img>의 src에 설정하자
+		$("img",this).attr("src",newSrc);
+		
+		//2. 마우스 포인터를 올리거나 포커스가 생성된 <a>요소의 서브 메뉴 영역 <ul></ul>영역을 
+		//   1초만에 아래로 펼쳐지며 노출되게 효과 메소드 중에서 slideDown("효과속도") 메소드 사용
+		$(this).next().stop().slideDown(1000);
+		           
+		// 현재 마우스 포인터를 올리거나 포커스가 생성된 <a>요소를 선택해서 beforeEl변수에 저장
+		beforeEl = $(this);
+  });
  
  
- 
- 
-  
-  
-  
-  
-  
+  //id="gnb"인 <ul>태그의 하위<li>요소들을 모두 선택해서
+  //경계 범위 내에서 마우스 포인터가 완전히 벗어 났을때의 mouseleave이벤트 등록
+  $("#gnb>li").on("mouseleave",function(){
+	
+	//만일 펼쳐져 있는 서브메뉴영역 안쪽<ul> 4쌍중 하나가 있으면? slideUp() 효과메소드로 
+	//1초만에 위로 접으면서 숨기게 하는 효과를 주자
+	$("#gnb ul:visible").slideUp(1000);
+	
+	//만일 마우스포인터가 올라가 있거나 포커스가 생성되어 있었던 <a>요소가 존재 한다면?
+	if(beforeEl){
+		
+		//"images/gnb_1_over.gif" 노란색  [홈] 이미지를?  "images/gnb_1_out.gif" 하얀색 [홈] 이미지로 변경
+		beforeEl.children("img").attr("src",  beforeEl
+											  .children("img")
+											  .attr("src")
+											  .replace("over.gif","out.gif") );		
+	}		
+  });  
   
 
 //-----------------------------------------------------------------------------------------------------
   /*
    주제: 슬라이드 전체 메뉴 만들기
    - 전체 메뉴를 클릭 했을 때 전체메뉴가 slide효과로 펼쳐지고
-          전체 메뉴 버튼 이미지도 바뀌도록 만들어 보자
+     전체 메뉴 버튼 이미지도 바뀌도록 만들어 보자
    - [전체메뉴]버튼을 다시~ 클릭 했을때 전체 메뉴가 위로 접히면서 숨겨지게 할수도 있고,
      [CLOSE]버튼을 클릭했을때는 다시 전체메뉴가 위로 접히면서 사라지게도 할수 있다.  
    */
  
- 
+	$("#total_btn>a").click(function(){             // <a>[전체메뉴 ▼] 클릭시  실행
+		
+		$("#total_menu").slideToggle("normal");     //하위 서브 메뉴 <div>영역을 열거나 닫기 
+		
+		const $img = $("img", this);               // 클릭된 <a> 안에 만들어진 하위 <img>를 최종 선택해 저장
+		
+	    const isClosed = $img.attr("src").includes("out");  //현재 [전체메뉴 ▼] 상태인지 확인  
+		
+		$img.attr("src",  isClosed ? "images/allmenu_btn_over.gif" : "images/allmenu_btn_out.gif");
+		//										[전체메뉴 ▲]                   [전체메뉴 ▼]
+		
+		return false;  								// <a>의 기본 링크 이동 막기
+	});
+	 
+ 	
+	//전체 메뉴 닫기 기능 CLOSE 버튼 처리
+	
+		//CLOSE <a>요소를 선택해서 click이벤트 등록
+		$("#total_close>a").click(function(event){
+			
+			//<a>요소의 href속성의 주소로 재요청해서 이동되는 기본이벤트 차단
+			event.preventDefault();
+			
+			//하위 메뉴 영역인 <div id="total_menu">..</div> 을 선택해서 
+			//아래로 펼쳐져 노출되어 있으면?  위로 접으면서 숨김  단! 0.5초만에 숨김
+			$("#total_menu").slideUp(500);
+			
+			//화살표 방향이 [전체메뉴 ▲] 이미지를 [전체메뉴 ▼] 이미지로 변경
+			$("#total_btn>a>img").attr("src","images/allmenu_btn_out.gif"); 
+			
+			
+		});
 	 
 	 
  
  
    
-  
-
+ 
 //-----------------------------------------------------------------------------------------------------
-
   /*
     주제 :  현재 날짜 표기 하기
     사이트 헤더 영역에  현재 연도, 월, 일을 표기 합니다.
     Date객체를 사용하여 오늘의 날짜 정보를 구해 올것입니다.
   */
-
+  
 	//1. 자바스크립트의 Date객체는 현재 날짜와 시간을 기준으로 정보를 제공하는 객체 입니다.
-	// 결론 : new Date(); 객체 생성
+	// 결론 : new Date(); 객체 생성 
 	let date = new Date();
 	
-	let initalTime = date.getTIme();
+	//2. 초 단위로 Date객체의 시간값을 밀리초 값으로 구해서 변수에 저장
+	/*
+		Date객체의 getTime() 메소드를 호출하면?
+		1970년 1월 1일 00:00:00 초부터 현재 오늘날짜까지 경과된 시간정보를 밀리초 단위로 반환합니다.
+	*/
+	 let initalTime = date.getTime();
+	 
+	 
+	 //3.경과된 시간을 밀리초 단위로 저장할 변수
+	 //-> 초깃값은 0으로 설정되어 있고, 이후에 매 초마다 1000밀리초씩 증가히게 됩니다. 
+	 let elapsedTime = 0;
 	
-	let eapsedTime = 0;
+	 //4. 1초 간격으로 날짜와 시간정보를 보여주기 위함 
+	 window.setInterval(function(){
+		
+		//매 1초 마다 elapsedTime변수에 1000을 더하여 경과 시간을 누적합니다.
+		//요약 : 1초 결과 시간을 변수에 누적
+		elapsedTime += 1000;
+		
+		//setTime() 메소드를 사용하여 Date객체의 시간을 업데이트 합니다.
+		//초기시간(initalTime)에 경과 시간을 더하여 새로운 시간을 만들어 Date객체 설정 합니다.
+		//이렇게 하면 항상 현재 시간에 맞춰 업데이트됩니다.
+		date.setTime( initalTime + elapsedTime );
+		//기존 위 Date객체의 시간을 초기시간과 경과의 합계로 설정 
+		
+
+		$("#date_wrap .year").text(date.getFullYear());   //현재 연도 2026 넣기 
+		$("#date_wrap .month").text(date.getMonth() + 1); //현재 월정보 7 넣기 
+		$("#date_wrap .date").text(date.getDate());       //현재 일정보 16 넣기 
+		$("#date_wrap .hour").text(date.getHours());      //현재 시정보 12 넣기 
+		$("#date_wrap .minute").text(date.getMinutes());  //현재 분정보 18 넣기 
+		$("#date_wrap .second").text(date.getSeconds());  //현재 초정보 59 넣기 	
+		
+	 },1000);
+	 
+	   
+
+	
+	
    
-    wintdow.setInterval(function(){
-		
-		let date =
-		
-		
-	},1000);
-	
+   
    
 
 //-----------------------------------------------------------------------------------------------------
@@ -359,13 +509,24 @@ $("#zoom a").on("click", function(){
     window.open(사이트 경로)메서드를 이용해 새창 으로 
     지정한 사이트가 열리도록 만들것입니다.  
   */
+  /*
+  	<form action="#" method="get" name="rel_f"> 요소를 선택해서 submit(전송요청이벤트) 등록  
+	submit(전송이벤트)?????? <input type="image" src="images/rel_site_btn.gif" alt="관련사이트 이동"> 클릭한 동작
+  */
+   $("form[name=rel_f]").submit(function(){
+	
+		//submit(전송이벤트)가 발생한 <form>요소의 하위 <select>요소를 선택해서 
+		//선택한 <option>요소의 value속성의 사이트주소값 얻기 
+		let url = $("select",this).val();
+	
+		//새로운 웹브라우저 창을 띄워 (window.open('요청할 url'))
+		//변수 url에 저장된 선택한 <option>요소의 주소값으로 요청하여 보여주게 하자.
+		window.open(url);
+		
+		//<form>요소의 action속성에 적힌 전송요청할 서버페이지 주소로 요청 전송하는 submit이벤트 차단!
+		return false;
+   });
    
-   
-	
-	
-	
-	
-	
 
  //-----------------------------------------------------------------------------------------------------
 
@@ -380,12 +541,41 @@ $("#zoom a").on("click", function(){
   	100정수만 추출해서 얻어낸다.
     
     요약 : div에 css문법으로 설정된 기본전체 문서 상단에서 퀵 메뉴영역(div)이 위치한 top속성값 !
-              퀵 메뉴가 아래로 위치한 top속성값 얻기 
+          퀵 메뉴가 아래로 위치한 top속성값 얻기 
   */
-	
-
+	//console.log($("#quick_menu").css("top")); //-> "100px"
+	//console.log(parseInt("100px")); //-> 100 
 	   
-	   
+	//1. <div>퀵 메뉴 영역에 css문법으로 설정된 전체 문서 상단에서 <div>퀵메뉴 영역의 top속성값 얻는다.
+	 let defalutTop  =  parseInt($("#quick_menu").css("top"));
+	 
+	//2. 웹브라우저 윈도우창(window 객체)에  scroll이벤트(스크롤 막대바를 누른 상태에서 아래로 이동시키는 동작) 등록
+	$(window).on("scroll", function(){
+		
+		//scroll이벤트가 발생한 윈도우 창(window객체)를 다시 선택해서 
+		//스크롤 막대바가 세로 아랫 방향으로 이동된 높잇값(거릿값)을 구해 얻자 
+		let scv = $(this).scrollTop();
+		
+		//1초만에 스크롤막대바의 이동 거릿값 만큼 퀵메뉴 영역<div>이 따라오는 애니메이션을 주기 위해
+		//scv변수에 저장된 값과  defaultTop변수에 저장된 값을 합하여 
+		//top 속성 위치값으로 1초만에 이동시키는 애니메이션 처리 하자
+		$("#quick_menu").stop().animate({top : scv + defalutTop + "px"});
+		/*
+		스크롤 막대바를 세로 아랫방향으로 이동시키는 scroll이벤트가 발생할떄마다 
+		animate()메소드가 계속 호출됩니다.
+		animate메소드가 호출된다고 하는 것은 
+		큐 메모리 공간에 계속 쌓이면서 대기 상태가 되어 자기 차례가 된 animate메소드 
+		하나씩 실행된다는 의미 입니다.
+		이떄 사이트 방문자가  스크롤막대바를 위 아래로 계속 무한반복해서 움직이면 	
+		animate메소드가 여러번동작하려 하기 떄문에
+		화면의 에니메이션 처리가 느려 질수 있습니다. 
+		이를 방지하기 위해 stop()메소드를 호출해 큐저장소에 대기 중인 
+		animate메소드를 제거 하고
+		가장 먼저 호출된 animate메소드만 실행되게 하여 
+		애니메이션 동작 처리를 시켜야 합니다.
+		*/
+		
+	});	 
 
 
 });
