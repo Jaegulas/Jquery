@@ -13,16 +13,17 @@
 			참조변수  = $("요소선택").bxSlider({옵션들 설정 });	
 	 -->
 	 
-	<!-- 1. bxslider 홈페이지에 요청한 jquery.bxslider.min.css 파일의 코드를 불러워 html파일에 적용 -->
+	<!--  1. bxslider 홈페이지에 요청한 jquery.bxslider.min.css 파일의 코드를 불러와  html파일에 적용 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bxslider@4.2.17/dist/jquery.bxslider.min.css">
     
-    <!-- 2. jQuery 문법을 사용하기 위해 jquery.min.js 파일 코드를 불러와 html파일에 적용 -->
+    <!--  2. JQuery 문법을 사용하기 위해  jquery.min.js 파일 코드를 불러와 html파일에 적용  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     
-    <!-- 3. bxslider 홈페이지에 요청한 jquery.bxslider.min.js 파일의 코드를 불러와 html파일에 적용 -->
+    <!-- 3. bxSlider 홈페이지에 요청한 jquery.bxslider.min.js 파일의 코드를 불러와 html파일에 적용 -->
     <script src="https://cdn.jsdelivr.net/npm/bxslider@4.2.17/dist/jquery.bxslider.min.js"></script>
+	
 	<style>
-		*{margin: 0;padding: 0;}	
+		*{margin: 0;padding: 0;}
 		#gallery_wrap{
 			margin: 0 auto;
 			width: 640px;
@@ -31,16 +32,47 @@
 	<script>
 	$(function() {
 		
-		let ul = $(".slide_gallery").bxSlider({
-										mode : "fade",
-		
-										auto : true,
+	 let ul = $(".slide_gallery").bxSlider({
+												//슬라이드 이동 방향을 설정하는 mode속성으로
+												//3개의 값중에 하나를 설정 할수 있다.
+												//"horizontal" 수평방향으로 슬라이드가 흐르게 하는 값 
+												//"vertical" 수직방향으로 슬라이드가 흐르게 하는 값 
+												//"fade" 투명하게 사라지며 선명하게 보이게 하면서 슬라이드가 흐르게 하는 값 
+												mode : "horizontal",
+												
+												//슬라이드의 자동 전환 여부 설정하는 속성 auto
+												//값 -> true(자동전환), false(자동전환안함)
+												auto : true,
+												
+												//슬라이드 전환속도를 설정하는 속성 speed
+												//밀리초 단위의 값을 설정할수 있습니다.
+												//값을 설정하지 않으면 기본으로 설정되는 값은 500이므로 0.5초 간격으로 슬라이드가 전환됨
+												speed : 1000,
+												
+												
+												//이전 < 화살표    다음 > 화살표 노출 여부 설정하는 속성 controls속성
+												//값을 true를 설정하면 노출!  false를 설정하면 노출 안함!
+												controls : false
 										
-										speed : 1000,
-										
-										
-										
-									 });
+
+								    	 });
+	 
+	 	//<button id="prev">이전</button> 선택해서  'click' 이벤트를 등록 
+	 	$("#prev").on("click", function(){
+	 		
+	 		//위 ul변수에 저장된 <ul></ul>요소를 선택해하여  한단계 이전 슬라이드로 전환된게 하자.
+			ul.goToPrevSlide();
+	 		
+	 	});
+	 
+	 	//<button id="next">다음</button> 선택해서 'click' 이벤트 등록
+	 	$("#next").on("click", function(){
+	 		
+	 		//위 ul변수에 저장된 <ul></ul>요소를 선택해하여  한단계 다음 슬라이드로 전환된게 하자.
+			ul.goToNextSlide();
+	 	});
+	 	
+	 	
 	
 	});
 	</script>
